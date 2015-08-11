@@ -94,7 +94,7 @@ class S3Emitter(config: KinesisConnectorConfiguration, badSink: ISink, tracker: 
   val client = new AmazonS3Client(config.AWS_CREDENTIALS_PROVIDER)
   client.setEndpoint(config.S3_ENDPOINT)
 
-  val dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+  val dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 
   /**
    * Determines the filename in S3, which is the corresponding
