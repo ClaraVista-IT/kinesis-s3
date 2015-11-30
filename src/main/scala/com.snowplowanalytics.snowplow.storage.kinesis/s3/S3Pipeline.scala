@@ -33,14 +33,27 @@ import sinks._
  * S3Pipeline class sets up the Emitter/Buffer/Transformer/Filter
  */
 class S3Pipeline(badSink: ISink, tracker: Option[Tracker]) extends IKinesisConnectorPipeline[ ValidatedRecord, EmitterInput ] {
+  println("init s3 pipe")
 
-  override def getEmitter(configuration: KinesisConnectorConfiguration) = new S3Emitter(configuration, badSink, tracker)
+  override def getEmitter(configuration: KinesisConnectorConfiguration) = {
+    println("get emiter")
+    new S3Emitter(configuration, badSink, tracker)
+  }
 
-  override def getBuffer(configuration: KinesisConnectorConfiguration) = new BasicMemoryBuffer[ValidatedRecord](configuration)
+  override def getBuffer(configuration: KinesisConnectorConfiguration) ={
+    println("get buffer")
+    new BasicMemoryBuffer[ValidatedRecord](configuration)
+  }
 
-  override def getTransformer(c: KinesisConnectorConfiguration) = new RawEventTransformer()
+  override def getTransformer(c: KinesisConnectorConfiguration) = {
+    println("get raw event transformer")
+    new RawEventTransformer()
+  }
 
-  override def getFilter(c: KinesisConnectorConfiguration) = new AllPassFilter[ValidatedRecord]()
+  override def getFilter(c: KinesisConnectorConfiguration) = {
+    println("get filter")
+    new AllPassFilter[ValidatedRecord]()
+  }
 
 }
 

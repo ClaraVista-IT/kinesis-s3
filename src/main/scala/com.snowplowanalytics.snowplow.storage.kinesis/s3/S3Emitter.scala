@@ -79,7 +79,7 @@ import sinks._
  * Once the buffer is full, the emit function is called.
  */
 class S3Emitter(config: KinesisConnectorConfiguration, badSink: ISink, tracker: Option[Tracker]) extends IEmitter[ EmitterInput ] {
-
+   println ("S3EMMITTEER")
   /**
    * The amount of time to wait in between unsuccessful index requests (in milliseconds).
    * 10 seconds = 10 * 1000 = 10000
@@ -94,14 +94,18 @@ class S3Emitter(config: KinesisConnectorConfiguration, badSink: ISink, tracker: 
   val client = new AmazonS3Client(config.AWS_CREDENTIALS_PROVIDER)
   client.setEndpoint(config.S3_ENDPOINT)
 
-  val dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+  val dateFormat = new SimpleDateFormat("yyyy/MM/dd/yyyy-MM-dd-HH-mm-ss")
 
   /**
    * Determines the filename in S3, which is the corresponding
    * Kinesis sequence range of records in the file.
    */
   protected def getFileName(firstSeq: String, lastSeq: String, lzoCodec: LzopCodec): String = {
-    dateFormat.format(Calendar.getInstance().getTime()) +
+    println("    ******  "+"LZO/"+dateFormat.format(Calendar.getInstance().getTime()) +
+      "-" + firstSeq + "-" + lastSeq + lzoCodec.getDefaultExtension())
+
+
+    "LZO/"+dateFormat.format(Calendar.getInstance().getTime()) +
       "-" + firstSeq + "-" + lastSeq + lzoCodec.getDefaultExtension()
   }
 
@@ -116,8 +120,10 @@ class S3Emitter(config: KinesisConnectorConfiguration, badSink: ISink, tracker: 
    * @return list of inputs which failed transformation
    */
   override def emit(buffer: UnmodifiableBuffer[ EmitterInput ]): java.util.List[ EmitterInput ] = {
+    println(" ****************************** emittting !!!!")
 
     log.info(s"Flushing buffer with ${buffer.getRecords.size} records.")
+
 
     val records = buffer.getRecords().asScala.toList
 
@@ -149,6 +155,9 @@ class S3Emitter(config: KinesisConnectorConfiguration, badSink: ISink, tracker: 
         try {
           client.putObject(bucket, filename, obj, objMeta)
           client.putObject(bucket, indexFilename, indexObj, indexObjMeta)
+
+          log.error(" ***********************  attemptEmitting ")
+
           log.info(s"Successfully emitted ${successes.size} records to S3 in s3://${bucket}/${filename} with index $indexFilename")
 
           // Return the failed records

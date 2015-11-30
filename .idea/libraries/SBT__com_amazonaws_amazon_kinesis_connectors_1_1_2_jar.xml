@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="SBT: com.amazonaws:amazon-kinesis-connectors:1.1.2:jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.amazonaws/amazon-kinesis-connectors/jars/amazon-kinesis-connectors-1.1.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

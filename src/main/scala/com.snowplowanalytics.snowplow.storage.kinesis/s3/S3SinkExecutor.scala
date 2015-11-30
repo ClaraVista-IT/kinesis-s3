@@ -30,8 +30,10 @@ import sinks._
  */
 class S3SinkExecutor(config: KinesisConnectorConfiguration, badSink: ISink, tracker: Option[Tracker]) extends KinesisConnectorExecutorBase[ ValidatedRecord, EmitterInput ] {
   super.initialize(config)
+  println("init s3 sink")
 
   override def getKinesisConnectorRecordProcessorFactory = {
+    println("get kinesis")
     new KinesisConnectorRecordProcessorFactory[ ValidatedRecord, EmitterInput ](new S3Pipeline(badSink, tracker), config)
   }
 }

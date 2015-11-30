@@ -75,11 +75,15 @@ object SinkApp extends App {
 
   val conf = config.value.getOrElse(throw new RuntimeException("--config argument must be provided"))
 
+  println(" ************************************************ ")
+
   val tracker = if (conf.hasPath("sink.monitoring.snowplow")) {
     SnowplowTracking.initializeTracker(conf.getConfig("sink.monitoring.snowplow")).some
   } else { 
     None
   }
+
+  println("1")
 
   // TODO: make the conf file more like the Elasticsearch equivalent
   val kinesisSinkRegion = conf.getConfig("sink").getConfig("kinesis").getString("region")
@@ -90,20 +94,32 @@ object SinkApp extends App {
   val logLevel = conf.getConfig("sink").getConfig("logging").getString("level")
   System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, logLevel)
 
+  println("2")
+
   val credentialConfig = conf.getConfig("sink").getConfig("aws")
 
   val credentials = CredentialsLookup.getCredentialsProvider(credentialConfig.getString("access-key"), credentialConfig.getString("secret-key"))
 
+  println("3")
+
+
   val badSink = new KinesisSink(credentials, kinesisSinkEndpoint, kinesisSinkName, tracker)
 
   val executor = new S3SinkExecutor(convertConfig(conf, credentials), badSink, tracker)
+
+  println("4")
 
   tracker match {
     case Some(t) => SnowplowTracking.initializeSnowplowTracking(t)
     case None => None
   }
 
+  println("5")
+
+
   executor.run()
+  println("6")
+
 
   /**
    * This function converts the config file into the format
